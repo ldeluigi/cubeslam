@@ -2,7 +2,7 @@
   "name": "slam",
   "dependencies": {
     "component/emitter": "*",
-    "component/mousetrap": "*",
+    "ccampbell/mousetrap": "*",
     "component/cookie": "*",
     "component/jquery": "*",
     "component/preloader": "*",
