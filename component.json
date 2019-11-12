@@ -4,7 +4,7 @@
     "component/emitter": "*",
     "component/mousetrap": "*",
     "component/cookie": "*",
-    "component/jquery": "1.9.1",
+    "component/jquery": "*",
     "component/preloader": "*",
     "publicclass/rtc": "*",
     "publicclass/request-animation-frame": "*",

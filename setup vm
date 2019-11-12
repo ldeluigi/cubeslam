@@ -1,0 +1,5 @@
+docker pull node
+
+npm install -g component
+npm install -g jade
+npm install -g stylus
