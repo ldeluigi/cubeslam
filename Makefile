@@ -65,9 +65,6 @@ deploy-webrtc: prepare-deploy
 node_modules/:
 	npm install
 
-components/: node_modules
-	node_modules/.bin/component-install
-
 lib/renderer-3d/shaders/%.js: lib/renderer-3d/shaders/%.glsl
 	support/str-to-js > $@ < $<
 
@@ -99,13 +96,19 @@ build/build-stylus.css: $(STYLUS)
 	node_modules/.bin/stylus --use nib < stylesheets/screen.styl --include-css -I stylesheets > $@
 
 build/build-3d.js: $(LIB_3D) $(GEOMETRY_JS) $(SHADERS_JS)
-	(cd lib/renderer-3d && ../../node_modules/.bin/component build && sed -e 1,$(REQUIRE_LINES)d build/build.js | cat - aliases.js) > $@
+	(cd lib/renderer-3d && ../../node_modules/.bin/jspm bundle-sfx build/build && sed -e 1,$(REQUIRE_LINES)d build/build.js | cat - aliases.js) > $@
 
 build/build-css.js: $(LIB_CSS)
-	(cd lib/renderer-css && ../../node_modules/.bin/component build && sed -e 1,$(REQUIRE_LINES)d build/build.js | cat - aliases.js) > $@
+	(cd lib/renderer-css && ../../node_modules/.bin/jspm bundle-sfx build/build && sed -e 1,$(REQUIRE_LINES)d build/build.js | cat - aliases.js) > $@
 
-build/build.js: components $(COMPONENTS) $(LIB) component.json
-	node_modules/.bin/component-build $(DEV)
+create_build:
+	mkdir -p build && touch build/build.js
+
+build/build.js: node_modules config.js package.json create_build
+	cd ./build && \
+	../node_modules/.bin/jspm bundle-sfx 'lib/actions/debug' debug.js --inject --cwd .. && \
+	../node_modules/.bin/jspm bundle-sfx 'index' build.js --inject --cwd .. && \
+	cd ..
 
 lang/arbs/en-US.arb: build/*.html
 	node lang/langparse.js $^ > $@
@@ -154,4 +157,5 @@ test:
 .PHONY: test proxy clean clean-geometry clean-localization \
 				build build-min build-shaders build-styles force-build \
 				build-geometry build-component build-localization \
-				prepare-deploy deploy-webrtc deploy-goggles1 deploy-goggles deploy-einar deploy-alfred
+				prepare-deploy deploy-webrtc deploy-goggles1 deploy-goggles deploy-einar deploy-alfred \
+				create_build

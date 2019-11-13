@@ -1,20 +1,45 @@
 {
-  "name": "cubeslam",
-  "version": "1.0.0",
-  "description": "Play face-to-face against your friends",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "MIT",
-  "devDependencies": {
-    "component": "*",
-    "stylus": "git://github.com/stonebranch/stylus.git",
-    "jade": "0.28.x",
-    "nib": "~0.9.1",
-    "uglify-js": "~2.3.6",
-    "jsdom": "*",
-    "emitter-component": "~1.0.0",
-    "debug": "~0.7.2"
+  "jspm": {
+    "directories": {
+      "packages": "components"
+    },
+    "dependencies": {
+      "component/cookie": "github:component/cookie@master",
+      "component/emitter": "github:component/emitter@^1.3.0",
+      "component/jquery": "github:component/jquery@^1.0.0",
+      "component/preloader": "github:component/preloader@master",
+      "components/mousetrap": "github:components/mousetrap@^1.4.6",
+      "ecarter/css-emitter": "github:ecarter/css-emitter@master",
+      "jade": "npm:jade@^1.11.0",
+      "jsdom": "npm:jsdom@^15.2.1",
+      "publicclass/base64-arraybuffer": "github:publicclass/base64-arraybuffer@master",
+      "publicclass/copy": "github:publicclass/copy@master",
+      "publicclass/geom": "github:publicclass/geom@master",
+      "publicclass/latency": "github:publicclass/latency@master",
+      "publicclass/netchan": "github:publicclass/netchan@^0.4.0",
+      "publicclass/now": "github:publicclass/now@master",
+      "publicclass/request-animation-frame": "github:publicclass/request-animation-frame@master",
+      "publicclass/rtc": "github:publicclass/rtc@master",
+      "publicclass/stash": "github:publicclass/stash@^0.3.1",
+      "stylus": "npm:stylus@^0.54.7",
+      "visionmedia/debug": "github:visionmedia/debug@master"
+    },
+    "overrides": {
+      "github:publicclass/geom@master": {
+        "registry": "npm"
+      },
+      "github:component/cookie@master": {
+        "registry": "npm"
+      },
+      "github:publicclass/copy@master": {
+        "registry": "npm"
+      },
+      "github:visionmedia/debug@master": {
+        "registry": "npm"
+      },
+      "github:ecarter/css-emitter@master": {
+        "registry": "npm"
+      }
+    }
   }
 }
