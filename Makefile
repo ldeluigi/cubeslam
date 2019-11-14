@@ -1,4 +1,4 @@
-JADE = $(shell find views/*.jade)
+PUG = $(shell find views/*.pug)
 STYLUS=$(shell find stylesheets/ -name "*.styl" -type f)
 GEOMETRY=$(wildcard lib/renderer-3d/geometry/*.obj)
 GEOMETRY_JSON=$(GEOMETRY:.obj=.json)
@@ -30,14 +30,14 @@ GEOMETRY_JS += lib/renderer-3d/geometry/terrain3.js lib/renderer-3d/geometry/bea
 							 lib/renderer-3d/geometry/cpu.js
 
 
-build: build-shaders build-geometry build-component build-styles build-jade build-localization build-renderer
+build: build-shaders build-geometry build-component build-styles build-pug build-localization build-renderer
 	@:
 
 build-min: build $(MINIFY)
 build-renderer: build/build-3d.js build/build-css.js
 build-shaders: $(SHADERS_JS) lib/renderer-3d/shaders/index.js
 build-geometry: $(GEOMETRY_JS) lib/renderer-3d/geometry/index.js
-build-jade: build/build.html build/tech.html
+build-pug: build/build.html build/tech.html
 build-component: build/build.js
 build-styles: build/build-stylus.css
 build-localization: build/localization.arb $(LINKED_LANGUAGES)
@@ -89,8 +89,8 @@ public/javascript/%.min.js: public/javascript/%.js
 %.min.js: %.js
 	node_modules/.bin/uglifyjs $< -p 1 --source-map $@.map -c -m --lint > $@
 
-build/%.html: views/%.jade
-	node_modules/.bin/jade < $< --path $< > $@ -P
+build/%.html: views/%.pug
+	node_modules/.bin/pug < $< --path $< > $@ -P
 
 build/build-stylus.css: $(STYLUS)
 	node_modules/.bin/stylus --use nib < stylesheets/screen.styl --include-css -I stylesheets > $@
@@ -105,10 +105,7 @@ create_build:
 	mkdir -p build && touch build/build.js
 
 build/build.js: node_modules config.js package.json create_build
-	cd ./build && \
-	../node_modules/.bin/jspm bundle-sfx 'lib/actions/debug' debug.js --inject --cwd .. && \
-	../node_modules/.bin/jspm bundle-sfx 'index' build.js --inject --cwd .. && \
-	cd ..
+	node_modules/.bin/jspm bundle-sfx 'index' build/build.js --inject
 
 lang/arbs/en-US.arb: build/*.html
 	node lang/langparse.js $^ > $@
