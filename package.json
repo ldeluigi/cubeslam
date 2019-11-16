@@ -8,10 +8,11 @@
       "batch": "github:visionmedia/batch@^0.6.1",
       "cookie": "github:component/cookie@^1.1.3",
       "copy": "github:publicclass/copy@^0.2.0",
-      "css-emitter": "github:ecarter/css-emitter@master",
-      "debug": "github:visionmedia/debug@master",
+      "css-emitter": "npm:css-emitter@^0.0.1",
+      "debug": "npm:debug@^4.1.1",
       "emitter": "github:component/emitter@master",
-      "geom": "github:publicclass/geom@master",
+      "event": "npm:event@^1.0.0",
+      "geom": "npm:geom@^0.1.0",
       "inherit": "github:component/inherit@^0.0.3",
       "jquery": "github:component/jquery@^1.0.0",
       "jsdom": "npm:jsdom@^15.2.1",
@@ -22,26 +23,16 @@
       "netchan": "github:publicclass/netchan@^0.4.0",
       "now": "github:publicclass/now@master",
       "preloader": "github:component/preloader@master",
-      "pug": "github:pugjs/pug-cli@^0.1.1",
       "request-animation-frame": "github:publicclass/request-animation-frame@master",
       "rtc": "github:publicclass/rtc@master",
       "standard-deviation": "github:component/standard-deviation@^0.0.1",
       "stash": "github:publicclass/stash@master",
-      "stylus": "github:stylus/stylus@^0.54.7",
+      "supports-color": "npm:supports-color@^7.1.0",
       "to-function": "github:component/to-function@^2.0.6",
       "type": "github:component/type@^1.2.1",
-      "variance": "github:component/variance@master"
+      "variance": "npm:variance@^0.0.1"
     },
     "overrides": {
-      "github:ecarter/css-emitter@master": {
-        "registry": "npm"
-      },
-      "github:publicclass/geom@master": {
-        "registry": "npm"
-      },
-      "github:visionmedia/debug@master": {
-        "registry": "npm"
-      },
       "github:component/emitter@master": {
         "registry": "npm"
       },
@@ -72,21 +63,19 @@
       "github:component/type@1.2.1": {
         "registry": "npm"
       },
-      "github:component/variance@master": {
-        "registry": "npm"
-      },
       "github:component/mean@1.0.0": {
         "registry": "npm"
       },
       "github:component/to-function@2.0.6": {
         "registry": "npm"
-      },
-      "github:stylus/stylus@0.54.7": {
-        "registry": "npm"
-      },
-      "github:pugjs/pug-cli@0.1.1": {
-        "registry": "npm"
       }
     }
+  },
+  "dependencies": {
+    "jade": "^0.35.0",
+    "jsdom": "^9.12.0",
+    "jspm": "^0.16.55",
+    "nib": "^1.1.2",
+    "stylus": "^0.54.7"
   }
 }

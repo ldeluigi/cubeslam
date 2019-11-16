@@ -1,4 +1,4 @@
-PUG = $(shell find views/*.pug)
+JADE = $(shell find views/*.jade)
 STYLUS=$(shell find stylesheets/ -name "*.styl" -type f)
 GEOMETRY=$(wildcard lib/renderer-3d/geometry/*.obj)
 GEOMETRY_JSON=$(GEOMETRY:.obj=.json)
@@ -30,14 +30,14 @@ GEOMETRY_JS += lib/renderer-3d/geometry/terrain3.js lib/renderer-3d/geometry/bea
 							 lib/renderer-3d/geometry/cpu.js
 
 
-build: build-shaders build-geometry build-component build-styles build-pug build-localization build-renderer
+build: build-shaders build-geometry build-component build-styles build-jade build-localization build-renderer
 	@:
 
 build-min: build $(MINIFY)
 build-renderer: build/build-3d.js build/build-css.js
 build-shaders: $(SHADERS_JS) lib/renderer-3d/shaders/index.js
 build-geometry: $(GEOMETRY_JS) lib/renderer-3d/geometry/index.js
-build-pug: build/build.html build/tech.html
+build-jade: build/build.html build/tech.html
 build-component: build/build.js
 build-styles: build/build-stylus.css
 build-localization: build/localization.arb $(LINKED_LANGUAGES)
@@ -62,8 +62,12 @@ deploy-goggles1: prepare-deploy
 deploy-webrtc: prepare-deploy
 	support/deploy webrtcgame $(v)
 
-node_modules/:
-	npm install
+node_modules:
+	npm install jspm@0.16x && \
+	npm install nib && \
+	npm install stylus && \
+	npm install jade@0.35.0 && \
+	npm install jsdom@9.12.0
 
 lib/renderer-3d/shaders/%.js: lib/renderer-3d/shaders/%.glsl
 	support/str-to-js > $@ < $<
@@ -89,23 +93,26 @@ public/javascript/%.min.js: public/javascript/%.js
 %.min.js: %.js
 	node_modules/.bin/uglifyjs $< -p 1 --source-map $@.map -c -m --lint > $@
 
-build/%.html: views/%.pug
-	node_modules/.bin/pug < $< --path $< > $@ -P
+build/%.html: views/%.jade node_modules
+	node_modules/.bin/jade < $< --path $< > $@ -P
 
-build/build-stylus.css: $(STYLUS)
+build/build-stylus.css: $(STYLUS) node_modules
 	node_modules/.bin/stylus --use nib < stylesheets/screen.styl --include-css -I stylesheets > $@
 
 build/build-3d.js: $(LIB_3D) $(GEOMETRY_JS) $(SHADERS_JS)
-	(cd lib/renderer-3d && ../../node_modules/.bin/jspm bundle-sfx build/build && sed -e 1,$(REQUIRE_LINES)d build/build.js | cat - aliases.js) > $@
+	(cd lib/renderer-3d && ../../node_modules/.bin/jspm bundle-sfx index build/build.js && sed -e 1,$(REQUIRE_LINES)d build/build.js | cat - aliases.js) > $@
 
 build/build-css.js: $(LIB_CSS)
-	(cd lib/renderer-css && ../../node_modules/.bin/jspm bundle-sfx build/build && sed -e 1,$(REQUIRE_LINES)d build/build.js | cat - aliases.js) > $@
+	(cd lib/renderer-css && ../../node_modules/.bin/jspm bundle-sfx index build/build.js && sed -e 1,$(REQUIRE_LINES)d build/build.js | cat - aliases.js) > $@
 
 create_build:
-	mkdir -p build && touch build/build.js
+	mkdir -p build
 
-build/build.js: node_modules config.js package.json create_build
-	node_modules/.bin/jspm bundle-sfx 'index' build/build.js --inject
+components: config.js package.json
+	mkdir -p components && jspm install && touch components
+
+build/build.js: node_modules components config.js package.json create_build
+	node_modules/.bin/jspm bundle-sfx 'index' build/build.js
 
 lang/arbs/en-US.arb: build/*.html
 	node lang/langparse.js $^ > $@
@@ -117,7 +124,7 @@ public/lang/%.arb: lang/arbs/%.arb
 	ln -s ../../$< $@
 
 clean: clean-geometry clean-localization
-	rm -Rf build/ components/ $(SHADERS_JS)
+	rm -Rf build/ $(SHADERS_JS)
 
 clean-localization:
 	rm -Rf $(GENERATED_LANGUAGES)
