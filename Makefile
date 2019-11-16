@@ -108,8 +108,8 @@ build/build-css.js: $(LIB_CSS)
 create_build:
 	mkdir -p build
 
-components: config.js package.json
-	mkdir -p components && jspm install && touch components
+components: config.js package.json node_modules
+	mkdir -p components && node_modules/.bin/jspm install && touch components
 
 build/build.js: node_modules components config.js package.json create_build
 	node_modules/.bin/jspm bundle-sfx 'index' build/build.js
