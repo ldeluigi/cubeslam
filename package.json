@@ -3,18 +3,43 @@
   "version": "1.0.0",
   "description": "Play face-to-face against your friends",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack",
+    "install": "napa component/preloader:preloader"
   },
   "author": "",
   "license": "MIT",
   "devDependencies": {
     "component": "^1.1.0",
     "debug": "~0.7.2",
-    "emitter-component": "~1.0.0",
+    "emitter-component": "^1.0.1",
     "jade": "0.28.x",
-    "jsdom": "*",
+    "jsdom": "9.12.0",
+    "napa": "^3.0.0",
     "nib": "~0.9.1",
     "stylus": "git://github.com/stonebranch/stylus.git",
-    "uglify-js": "~2.3.6"
+    "uglify-js": "~2.3.6",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10"
+  },
+  "dependencies": {
+    "base64-arraybuffer": "^0.2.0",
+    "cookie": "^0.4.0",
+    "copy": "^0.3.2",
+    "css-emitter-component": "^0.1.1",
+    "emitter": "0.0.5",
+    "geom": "^0.1.0",
+    "inherit": "^2.2.7",
+    "jquery": "github:components/jquery",
+    "latency": "git+https://github.com/publicclass/latency.git",
+    "median": "0.0.2",
+    "mousetrap": "^1.6.3",
+    "netchan": "git+https://github.com/publicclass/netchan.git",
+    "now": "github:publicclass/now",
+    "request-animation-frame": "^0.1.1",
+    "rtc": "^3.4.0",
+    "standard-deviation": "^1.0.0",
+    "stash": "0.0.3",
+    "variance": "0.0.1"
   }
 }

@@ -8,7 +8,6 @@ SHADERS_JS=$(SHADERS:.glsl=.js)
 LIB=$(shell find lib -name "*.js" -type f)
 LIB_3D=$(shell find lib/renderer-3d -name "*.js" -type f)
 LIB_CSS=$(shell find lib/renderer-css -name "*.js" -type f)
-COMPONENTS=$(shell find components -name "*.js" -type f)
 MINIFY=build public/javascript/slam.min.js public/javascript/renderer-3d.min.js public/javascript/renderer-css.min.js build/build.min.js
 
 GENERATED_LANGUAGES=lang/arbs/en-US.arb
@@ -65,9 +64,6 @@ deploy-webrtc: prepare-deploy
 node_modules/:
 	npm install
 
-components/: node_modules
-	node_modules/.bin/component-install
-
 lib/renderer-3d/shaders/%.js: lib/renderer-3d/shaders/%.glsl
 	support/str-to-js > $@ < $<
 
@@ -99,13 +95,14 @@ build/build-stylus.css: $(STYLUS)
 	node_modules/.bin/stylus --use nib < stylesheets/screen.styl --include-css -I stylesheets > $@
 
 build/build-3d.js: $(LIB_3D) $(GEOMETRY_JS) $(SHADERS_JS)
-	(cd lib/renderer-3d && ../../node_modules/.bin/component build && sed -e 1,$(REQUIRE_LINES)d build/build.js | cat - aliases.js) > $@
+	(cd lib/renderer-3d && ../../node_modules/.bin/webpack --config ../../webpack.config.js && sed -e 1,$(REQUIRE_LINES)d ../../build/build.js | cat - aliases.js) > $@
 
 build/build-css.js: $(LIB_CSS)
-	(cd lib/renderer-css && ../../node_modules/.bin/component build && sed -e 1,$(REQUIRE_LINES)d build/build.js | cat - aliases.js) > $@
+	(cd lib/renderer-css && ../../node_modules/.bin/webpack --config ../../webpack.config.js && sed -e 1,$(REQUIRE_LINES)d ../../build/build.js | cat - aliases.js) > $@
 
-build/build.js: components $(COMPONENTS) $(LIB) component.json
-	node_modules/.bin/component-build $(DEV)
+build/build.js: node_modules $(LIB) webpack.config.js
+	node_modules/.bin/webpack --config webpack.config.js 
+	#$(DEV)
 
 lang/arbs/en-US.arb: build/*.html
 	node lang/langparse.js $^ > $@
