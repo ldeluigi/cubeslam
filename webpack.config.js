@@ -7,6 +7,9 @@ module.exports = {
     path: path.resolve(__dirname, 'build')
   },
   target: 'node',
+  optimization: {
+        minimize: false // for debug purposes
+  },
   externals: {
     // require("jquery") is external and available
     //  on the global var jQuery

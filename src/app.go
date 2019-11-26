@@ -1,7 +1,6 @@
 package rtc
 
 import (
-  "appengine"
   "appengine/channel"
   "encoding/json"
   "encoding/base64"
@@ -28,7 +27,7 @@ type Template struct {
 }
 
 func Main(w http.ResponseWriter, r *http.Request) {
-  c := appengine.NewContext(r)
+  c := r.Context()
   h := w.Header()
   h.Set("Content-Type", "text/html; charset=utf-8")
   h.Set("Cache-Control", "private, max-age=0, must-revalidate")

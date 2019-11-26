@@ -1,6 +1,6 @@
 /*jshint node: true */
-var fs = require('fs')
-  , jsdom = require('jsdom');
+const fs = require('fs')
+const { JSDOM } = require('jsdom');
 
 var files = process.argv.slice(2);
 var pending = files.length;
@@ -11,22 +11,18 @@ var result = {
 };
 
 files.forEach(function(file){
-  jsdom.env({
-    html: fs.readFileSync(file, 'utf8'),
-    scripts: [ 'jquery.js' ],
-    done: function(err, window) {
-      if (err) {
-        console.log(err);
-      } else {
-        var $ = window.jQuery;
-        $('*').filter(function() { return $(this).attr('arb:id'); }).each(function() {
+	const jsdom = new JSDOM(fs.readFileSync(file, 'utf8'));
+	const { window } = jsdom;
+	const { document } = window;
+	global.window = window;
+	global.document = document;
+
+	const $ = global.jQuery = require('jquery/jquery.js');
+	$('*').filter(function() { return $(this).attr('arb:id'); }).each(function() {
           result[$(this).attr('arb:id')] = $(this).html() || $(this).attr('content');
-        });
-      }
-      --pending || done()
-    }
-  });
+    });
 })
+done();
 
 function done(){
   process.stdout.write('arb.register(\'cubeslam:en-US\',');

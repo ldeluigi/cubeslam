@@ -1,7 +1,7 @@
 application: webrtcgame
 version: live
-runtime: go
-api_version: go1
+runtime: go111
+main: ./src/
 
 handlers:
 # Static
@@ -64,10 +64,3 @@ skip_files:
 - ^(.*/)?test/.*$
 - ^(.*/)?ui/.*$
 
-pagespeed:
-  domains_to_rewrite:
-  - www.cubeslam.com
-  - https://www.cubeslam.com
-  disabled_rewriters:
-  - LazyloadImages
-  - lazyload_images

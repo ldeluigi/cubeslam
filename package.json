@@ -14,7 +14,7 @@
     "debug": "~0.7.2",
     "emitter-component": "^1.0.1",
     "jade": "0.28.x",
-    "jsdom": "9.12.0",
+    "jsdom": "^15.2.1",
     "napa": "^3.0.0",
     "nib": "~0.9.1",
     "stylus": "git://github.com/stonebranch/stylus.git",
@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "base64-arraybuffer": "^0.2.0",
+    "bufferutil": "^4.0.1",
     "cookie": "^0.4.0",
     "copy": "^0.3.2",
     "css-emitter-component": "^0.1.1",
@@ -40,6 +41,8 @@
     "rtc": "^3.4.0",
     "standard-deviation": "^1.0.0",
     "stash": "0.0.3",
+    "tty": "^1.0.1",
+    "utf-8-validate": "^5.0.2",
     "variance": "0.0.1"
   }
 }
