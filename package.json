@@ -4,7 +4,7 @@
   "description": "Play face-to-face against your friends",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack",
+    "build": "webpack --config webpack.config.js",
     "install": "napa component/preloader:preloader"
   },
   "author": "",
@@ -12,14 +12,14 @@
   "devDependencies": {
     "component": "^1.1.0",
     "debug": "~0.7.2",
-    "emitter-component": "^1.0.1",
+    "file-loader": "^5.0.2",
     "jade": "0.28.x",
     "jsdom": "^15.2.1",
     "napa": "^3.0.0",
     "nib": "~0.9.1",
     "stylus": "git://github.com/stonebranch/stylus.git",
     "uglify-js": "~2.3.6",
-    "webpack": "^4.41.2",
+    "webpack": "^4.41.5",
     "webpack-cli": "^3.3.10"
   },
   "dependencies": {
@@ -28,7 +28,7 @@
     "cookie": "^0.4.0",
     "copy": "^0.3.2",
     "css-emitter-component": "^0.1.1",
-    "emitter": "0.0.5",
+    "emitter-component": "^1.1.1",
     "geom": "^0.1.0",
     "inherit": "^2.2.7",
     "jquery": "github:components/jquery",

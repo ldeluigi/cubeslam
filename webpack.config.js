@@ -1,20 +1,39 @@
-const path = require('path');
+const path = require("path");
+const webpack = require("webpack");
 
 module.exports = {
-  entry: './index.js',
+  mode: "development",
+  entry: "./index.js",
   output: {
-    filename: 'build.js',
-    path: path.resolve(__dirname, 'build')
+    filename: "build.js",
+    path: path.resolve(__dirname, "build")
   },
-  target: 'node',
+  target: "web",
   optimization: {
-        minimize: false // for debug purposes
+    minimize: false // for debug purposes
   },
   externals: {
     // require("jquery") is external and available
     //  on the global var jQuery
-    "jquery": "jQuery",
+    jquery: "jQuery",
     "css-emitter": "CssEmitter",
-    "preloader": "Preloader"
-  }
+    preloader: "Preloader"
+  },
+  module: {
+    rules: [
+      {
+        test: /\.(obj|mtl)$/,
+        use: ["file-loader"]
+      }
+    ],
+    noParse: [/\.py/]
+  },
+  plugins: [
+    new webpack.IgnorePlugin(/vertx/),
+    new webpack.ContextReplacementPlugin(/copy/, data => {
+      delete data.dependencies[0].critical;
+      return data;
+    })
+  ],
+  node: { fs: "empty", tls: "empty" }
 };
