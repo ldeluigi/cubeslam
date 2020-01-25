@@ -15,7 +15,7 @@ module.exports = {
   externals: {
     // require("jquery") is external and available
     //  on the global var jQuery
-    jquery: "jQuery",
+    //jquery: "jQuery",
     "css-emitter": "CssEmitter",
     preloader: "Preloader"
   },
@@ -35,5 +35,10 @@ module.exports = {
       return data;
     })
   ],
+  resolve: {
+    alias: {
+      jquery: path.resolve(__dirname, "./jquery-3.4.1.min.js")
+    }
+  },
   node: { fs: "empty", tls: "empty" }
 };
