@@ -12,13 +12,7 @@ module.exports = {
   optimization: {
     minimize: false // for debug purposes
   },
-  externals: {
-    // require("jquery") is external and available
-    //  on the global var jQuery
-    //jquery: "jQuery",
-    "css-emitter": "CssEmitter",
-    preloader: "Preloader"
-  },
+  externals: {},
   module: {
     rules: [
       {
