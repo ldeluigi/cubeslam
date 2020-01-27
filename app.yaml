@@ -1,5 +1,3 @@
-application: webrtcgame
-version: live
 runtime: go111
 main: ./src/
 
@@ -37,12 +35,12 @@ handlers:
 
 # Tasks
 - url: /_expire
-  script: _go_app
+  script: auto
   login: admin
 
 # Rooms
 - url: /.*
-  script: _go_app
+  script: auto
   secure: always
 
 inbound_services:

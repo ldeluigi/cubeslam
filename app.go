@@ -1,4 +1,4 @@
-package rtc
+package main
 
 import (
   "appengine/channel"
@@ -375,7 +375,7 @@ func Cleanup(str string) string {
   return strings.Trim(str,"- ")
 }
 
-func init() {
+func main() {
   now := time.Now()
   rand.Seed(now.Unix())
   http.HandleFunc("/", Main)
