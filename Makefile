@@ -100,7 +100,8 @@ build/build-3d.js: $(LIB_3D) $(GEOMETRY_JS) $(SHADERS_JS)
 build/build-css.js: $(LIB_CSS)
 	(cd lib/renderer-css && ../../node_modules/.bin/webpack --config ../../webpack.config.js && sed -e 1,$(REQUIRE_LINES)d ../../build/build.js | cat - aliases.js) > $@
 
-build/build.js: node_modules $(LIB) webpack.config.js
+build/build.js: node_modules/ $(LIB) webpack.config.js
+	echo "Building entry point..."
 	node_modules/.bin/webpack --config webpack.config.js 
 	#$(DEV)
 
@@ -126,7 +127,7 @@ server.conf: server.conf.sample
 	@echo
 	@echo 'You need to create a `./server.conf`. Run this command to get started:'
 	@echo
-	@echo '  sed "s|SERVER_ROOT|$$(PWD)|g" server.conf.sample > server.conf'
+	@echo '  sed "s|SERVER_ROOT|$$(pwd)|g" server.conf.sample > server.conf'
 	@echo
 	@echo 'Then run `make proxy` again to start the server.'
 	@echo

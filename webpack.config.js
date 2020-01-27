@@ -31,7 +31,7 @@ module.exports = {
   ],
   resolve: {
     alias: {
-      jquery: path.resolve(__dirname, "./jquery-3.4.1.min.js")
+      jquery: path.resolve(__dirname, "./jquery/jquery.js")
     }
   },
   node: { fs: "empty", tls: "empty" }

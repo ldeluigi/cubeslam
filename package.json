@@ -5,7 +5,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --config webpack.config.js",
-    "install": "napa component/preloader:preloader && napa component/emitter:emitter && napa component/event:event && (rm -rf node_modules/*/.git/ || for /d %G in ('.\\node_modules\\*\\.git') do rd /s /q '%~G')"
+    "postinstall": "napa component/preloader:preloader && napa component/emitter:emitter && napa component/event:event && (rm -rf node_modules/*/.git/ || call clean_git.bat)"
   },
   "author": "",
   "license": "MIT",

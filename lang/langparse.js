@@ -17,7 +17,7 @@ files.forEach(function(file){
 	global.window = window;
 	global.document = document;
 
-	const $ = global.jQuery = require('jquery/jquery.js');
+	const $ = global.jQuery = require('../jquery/jquery.js');
 	$('*').filter(function() { return $(this).attr('arb:id'); }).each(function() {
           result[$(this).attr('arb:id')] = $(this).html() || $(this).attr('content');
     });
