@@ -1,7 +1,11 @@
 package main
 
+
+
 import (
-  "appengine/channel"
+  "google.golang.org/appengine"
+  "google.golang.org/appengine/channel"
+  "google.golang.org/appengine/log" 
   "encoding/json"
   "encoding/base64"
   "math/rand"
@@ -32,7 +36,7 @@ func Main(w http.ResponseWriter, r *http.Request) {
   h.Set("Content-Type", "text/html; charset=utf-8")
   h.Set("Cache-Control", "private, max-age=0, must-revalidate")
 
-  c.Debugf("Headers: %v",r.Header)
+  log.Debugf(c, "Headers: %v",r.Header)
 
   // redirect to room name
   if r.URL.Path == "/" && !SkipRedirect(r) {
@@ -44,7 +48,7 @@ func Main(w http.ResponseWriter, r *http.Request) {
     if _, err := GetRoom(c, roomName); err != nil {
       path = "/"+roomName
     } else {
-      c.Debugf("Room already exist. Generating a random string instead.")
+      log.Debugf(c, "Room already exist. Generating a random string instead.")
       path = "/"+Random(6)
     }
     if r.URL.RawQuery != "" {
@@ -72,7 +76,7 @@ func Main(w http.ResponseWriter, r *http.Request) {
   // skip rooms when using WebSocket signals
   // or when room name is empty
   if roomName == "" {
-    c.Debugf("Room with no name.")
+    log.Debugf(c, "Room with no name.")
     data.State = "room-empty"
 
   } else if appchan {
@@ -81,9 +85,9 @@ func Main(w http.ResponseWriter, r *http.Request) {
     // Empty room
     if room == nil {
       room = new(Room)
-      c.Debugf("Created room %s",roomName)
+      log.Debugf(c, "Created room %s",roomName)
       if err := PutRoom(c, roomName, room); err != nil {
-        c.Criticalf("Error occured while creating room %s: %+v", roomName, err)
+        log.Criticalf(c, "Error occured while creating room %s: %+v", roomName, err)
         return;
       }
       data.State = "room-empty"
@@ -98,16 +102,16 @@ func Main(w http.ResponseWriter, r *http.Request) {
 
     // DataStore error
     } else if err != nil {
-      c.Criticalf("Error occured while getting room %s: %+v",roomName,err)
+      log.Criticalf(c, "Error occured while getting room %s: %+v",roomName,err)
       return;
     }
   }
 
   // Parse the template and output HTML:
   template, err := template.ParseFiles("build/build.html")
-  if err != nil { c.Criticalf("execution failed: %s", err) }
+  if err != nil { log.Criticalf(c, "execution failed: %s", err) }
   err = template.Execute(w, data)
-  if err != nil { c.Criticalf("execution failed: %s", err) }
+  if err != nil { log.Criticalf(c, "execution failed: %s", err) }
 }
 
 func Tech(w http.ResponseWriter, r *http.Request) {
@@ -119,9 +123,9 @@ func Tech(w http.ResponseWriter, r *http.Request) {
 
   // Parse the template and output HTML:
   template, err := template.ParseFiles("build/tech.html")
-  if err != nil { c.Criticalf("execution failed: %s", err) }
+  if err != nil { log.Criticalf(c, "execution failed: %s", err) }
   err = template.Execute(w, data)
-  if err != nil { c.Criticalf("execution failed: %s", err) }
+  if err != nil { log.Criticalf(c, "execution failed: %s", err) }
 }
 
 func AppCache(w http.ResponseWriter, r *http.Request) {
@@ -134,9 +138,9 @@ func AppCache(w http.ResponseWriter, r *http.Request) {
 
   // Parse the template and output HTML:
   template, err := template.ParseFiles("support/manifest.appcache.skel")
-  if err != nil { c.Criticalf("execution failed: %s", err) }
+  if err != nil { log.Criticalf(c, "execution failed: %s", err) }
   err = template.Execute(w, data)
-  if err != nil { c.Criticalf("execution failed: %s", err) }
+  if err != nil { log.Criticalf(c, "execution failed: %s", err) }
 }
 
 func OnToken(w http.ResponseWriter, r *http.Request) {
@@ -147,7 +151,7 @@ func OnToken(w http.ResponseWriter, r *http.Request) {
     clientId := MakeClientId(roomName, userName)
     token, err := channel.Create(c, clientId)
     if err != nil {
-      c.Criticalf("Error while creating token: %s", err)
+      log.Criticalf(c, "Error while creating token: %s", err)
     }
     w.Write([]byte("user="+userName+"&token="+token))
   } else {
@@ -159,22 +163,22 @@ func OnConnect(w http.ResponseWriter, r *http.Request) {
   c := appengine.NewContext(r)
   roomName, userName := ParseClientId(r.FormValue("from"))
 
-  c.Debugf("Connected user %s to room %s",userName,roomName)
+  log.Debugf(c, "Connected user %s to room %s",userName,roomName)
 
   if room, err := GetRoom(c, roomName); err == nil {
 
     // see if user is in room
     if room.HasUser(userName) {
-      c.Debugf("User already in room")
+      log.Debugf(c, "User already in room")
       // user already in the room
       // just send "connected" again in
       // case it was missed last time
 
     // or see if it's full
     } else if room.Occupants() == 2 {
-      c.Debugf("Room Full, sending 'full' to %s",userName)
+      log.Debugf(c, "Room Full, sending 'full' to %s",userName)
       if err := channel.Send(c, MakeClientId(roomName, userName), "full"); err != nil {
-        c.Criticalf("OnConnect: Error while sending full:",err)
+        log.Criticalf(c, "OnConnect: Error while sending full:",err)
       }
       return;
 
@@ -183,7 +187,7 @@ func OnConnect(w http.ResponseWriter, r *http.Request) {
       room.AddUser(userName)
       err = PutRoom(c, roomName, room)
       if err != nil {
-        c.Criticalf("OnConnect: Connected could not put room %s: ",roomName,err)
+        log.Criticalf(c, "OnConnect: Connected could not put room %s: ",roomName,err)
         return
       }
     }
@@ -191,19 +195,19 @@ func OnConnect(w http.ResponseWriter, r *http.Request) {
     // send connected to both when room is complete
     if room.Occupants() == 2 {
       otherUser := room.OtherUser(userName)
-      c.Debugf("Room Complete, sending 'connected' to %s and %s",userName,otherUser)
+      log.Debugf(c, "Room Complete, sending 'connected' to %s and %s",userName,otherUser)
       if err := channel.Send(c, MakeClientId(roomName, otherUser), "connected"); err != nil {
-        c.Criticalf("OnConnect: Error while sending connected:",err)
+        log.Criticalf(c, "OnConnect: Error while sending connected:",err)
       }
       if err := channel.Send(c, MakeClientId(roomName, userName), "connected"); err != nil {
-        c.Criticalf("OnConnect: Error while sending connected:",err)
+        log.Criticalf(c, "OnConnect: Error while sending connected:",err)
       }
     } else {
-      c.Debugf("Waiting for another user before sending 'connected'")
+      log.Debugf(c, "Waiting for another user before sending 'connected'")
     }
 
   } else {
-    c.Criticalf("OnConnect: Could not get room %s: ",roomName,err)
+    log.Criticalf(c, "OnConnect: Could not get room %s: ",roomName,err)
   }
 }
 
@@ -213,36 +217,36 @@ func OnDisconnect(w http.ResponseWriter, r *http.Request) {
   if room, err := GetRoom(c, roomName); err == nil {
 
     if room.HasUser(userName) == false {
-      c.Debugf("OnDisconnect: User %s not found in room %s",userName,roomName)
+      log.Debugf(c, "OnDisconnect: User %s not found in room %s",userName,roomName)
       return;
     }
 
     // get the other user before we remove the current one
     otherUser := room.OtherUser(userName)
     empty := room.RemoveUser(userName)
-    c.Debugf("OnDisconnect: Removed user %s from room %s",userName,roomName)
+    log.Debugf(c, "OnDisconnect: Removed user %s from room %s",userName,roomName)
 
     err := PutRoom(c, roomName, room)
     if err != nil {
-      c.Criticalf("OnDisconnect: Could not put room %s: ",roomName,err)
+      log.Criticalf(c, "OnDisconnect: Could not put room %s: ",roomName,err)
       return;
     }
 
     if empty {
-      c.Debugf("OnDisconnect: Room is now empty.")
+      log.Debugf(c, "OnDisconnect: Room is now empty.")
 
     } else if otherUser != "" {
-      c.Debugf("Removed %s. Sending 'disconnected' to %s",userName,MakeClientId(roomName, otherUser))
+      log.Debugf(c, "Removed %s. Sending 'disconnected' to %s",userName,MakeClientId(roomName, otherUser))
       if err := channel.Send(c, MakeClientId(roomName, otherUser), "disconnected"); err != nil {
-        c.Criticalf("OnDisconnect: Error while sending 'disconnected':",err)
+        log.Criticalf(c, "OnDisconnect: Error while sending 'disconnected':",err)
       }
-      c.Debugf("Removed %s. Sending 'disconnected' to %s",userName,MakeClientId(roomName, userName))
+      log.Debugf(c, "Removed %s. Sending 'disconnected' to %s",userName,MakeClientId(roomName, userName))
       if err := channel.Send(c, MakeClientId(roomName, userName), "disconnected"); err != nil {
-        c.Criticalf("OnDisconnect: Error while sending 'disconnected':",err)
+        log.Criticalf(c, "OnDisconnect: Error while sending 'disconnected':",err)
       }
     }
   } else {
-    c.Criticalf("OnDisconnect: Could not get room %s: ",roomName,err)
+    log.Criticalf(c, "OnDisconnect: Could not get room %s: ",roomName,err)
   }
 }
 
@@ -253,23 +257,23 @@ func OnMessage(w http.ResponseWriter, r *http.Request) {
 
   b, err := ioutil.ReadAll(r.Body);
   if err != nil {
-    c.Criticalf("OnMessage: Error while reading body: %s",err)
+    log.Criticalf(c, "OnMessage: Error while reading body: %s",err)
     return
   }
   r.Body.Close()
 
   room, err := GetRoom(c, roomName)
   if err != nil {
-    c.Criticalf("OnMessage: Error while retreiving room %s:",roomName,err)
+    log.Criticalf(c, "OnMessage: Error while retreiving room %s:",roomName,err)
     return
   }
 
-  c.Debugf("received channel data message from %s in %s: %s",userName,roomName,b)
+  log.Debugf(c, "received channel data message from %s in %s: %s",userName,roomName,b)
 
   otherUser := room.OtherUser(userName)
   if otherUser != "" {
     if err := channel.Send(c, MakeClientId(roomName, otherUser), string(b)); err != nil {
-      c.Criticalf("OnMessage: Error while sending JSON:",err)
+      log.Criticalf(c, "OnMessage: Error while sending JSON:",err)
       return
     }
   }
@@ -284,14 +288,14 @@ func Expire(w http.ResponseWriter, r *http.Request) {
   // Find expired rooms
   rooms, err := ExpiredRooms(c)
   if err != nil {
-    c.Criticalf("%s",err)
+    log.Criticalf(c, "%s",err)
     return
   }
-  c.Debugf("Expired rooms: %v",rooms)
+  log.Debugf(c, "Expired rooms: %v",rooms)
 
   // Delete the rooms
   if err := DelRooms(c, rooms); err != nil {
-    c.Criticalf("%s",err)
+    log.Criticalf(c, "%s",err)
     return
   }
   w.Write([]byte("OK"))
@@ -302,11 +306,11 @@ func Occupants(w http.ResponseWriter, r *http.Request) {
   w.Header().Set("Content-Type", "text/html; charset=utf-8")
   total, err := TotalOccupants(c)
   if err != nil {
-    c.Criticalf("%s",err)
+    log.Criticalf(c, "%s",err)
     return
   }
   totalString := strconv.FormatInt(int64(total),10)
-  c.Debugf("Current occupants: %s",totalString)
+  log.Debugf(c, "Current occupants: %s",totalString)
   w.Write([]byte(totalString))
 }
 

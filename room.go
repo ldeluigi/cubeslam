@@ -1,8 +1,9 @@
 package main
 
 import (
-  "appengine"
-  "appengine/datastore"
+  "context"
+  "google.golang.org/appengine/datastore"
+  "google.golang.org/appengine/log" 
   "time"
 )
 
@@ -59,7 +60,7 @@ func (r *Room) Occupants() int {
   return occupancy
 }
 
-func GetRoom(c appengine.Context, name string) (*Room, error) {
+func GetRoom(c context.Context, name string) (*Room, error) {
   k := datastore.NewKey(c, "Room", name, 0, nil)
   r := new(Room)
   err := datastore.Get(c, k, r)
@@ -69,32 +70,32 @@ func GetRoom(c appengine.Context, name string) (*Room, error) {
   return r, err;
 }
 
-func PutRoom(c appengine.Context, name string, room *Room) error {
+func PutRoom(c context.Context, name string, room *Room) error {
   room.Name = name
   room.LastChanged = time.Now()
   k := datastore.NewKey(c, "Room", name, 0, nil)
   _, err := datastore.Put(c, k, room)
-  c.Debugf("Storing %+v", room)
+  log.Debugf(c,"Storing %+v", room)
   return err;
 }
 
-func DelRoom(c appengine.Context, name string) error {
+func DelRoom(c context.Context, name string) error {
   k := datastore.NewKey(c, "Room", name, 0, nil)
   err := datastore.Delete(c, k)
   return err;
 }
 
-func DelRooms(c appengine.Context, rooms []Room) error {
+func DelRooms(c context.Context, rooms []Room) error {
   keys := make([]*datastore.Key,0)
   for _, room := range(rooms) {
     keys = append(keys, datastore.NewKey(c, "Room", room.Name, 0, nil))
   }
-  c.Debugf("Deleting Rooms: %+v",keys)
+  log.Debugf(c,"Deleting Rooms: %+v",keys)
   err := datastore.DeleteMulti(c, keys)
   return err;
 }
 
-func TotalOccupants(c appengine.Context) (int, error) {
+func TotalOccupants(c context.Context) (int, error) {
   q := datastore.NewQuery("Room")
   t := 0
   for x := q.Run(c); ; {
@@ -111,7 +112,7 @@ func TotalOccupants(c appengine.Context) (int, error) {
   return t, nil
 }
 
-func ExpiredRooms(c appengine.Context) ([]Room, error) {
+func ExpiredRooms(c context.Context) ([]Room, error) {
   an_hour_ago := time.Now().Add(-time.Hour)
   rooms := make([]Room,0)
   q := datastore.NewQuery("Room").Filter("LastChanged <",an_hour_ago)
@@ -124,7 +125,7 @@ func ExpiredRooms(c appengine.Context) ([]Room, error) {
     if err != nil {
       return nil, err
     }
-    c.Debugf("ExpiredRoom: %+v",room)
+    log.Debugf(c,"ExpiredRoom: %+v",room)
     rooms = append(rooms, room)
   }
   return rooms, nil
