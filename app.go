@@ -382,6 +382,16 @@ func Cleanup(str string) string {
 func main() {
   now := time.Now()
   rand.Seed(now.Unix())
+  port := os.Getenv("PORT")
+  if port == "" {
+	  port = "8080"
+	  log.Printf("Defaulting to port %s", port)
+  }
+
+  log.Printf("Listening on port %s", port)
+  if err := http.ListenAndServe(":"+port, nil); err != nil {
+	  log.Fatal(err)
+  }
   http.HandleFunc("/", Main)
   http.HandleFunc("/manifest.appcache", AppCache)
   http.HandleFunc("/tech", Tech)
