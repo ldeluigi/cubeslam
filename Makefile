@@ -147,9 +147,15 @@ test:
 	node test/see.js
 	node test/tick.js
 
+pkg/:
+	go get google.golang.org/appengine
+
+local: pkg/
+	gcloud beta emulators datastore start & \
+	dev_appserver.py app.yaml --datastore_emulator_port 8081
 
 .SUFFIXES:
-.PHONY: test proxy clean clean-geometry clean-localization \
+.PHONY: test local proxy clean clean-geometry clean-localization \
 				build build-min build-shaders build-styles force-build \
 				build-geometry build-component build-localization \
 				prepare-deploy deploy-webrtc deploy-goggles1 deploy-goggles deploy-einar deploy-alfred
