@@ -600,7 +600,7 @@ html(lang='en',manifest='/manifest.appcache')
     script(src='/javascript/libs/stats.{{.Minified}}js')
     script(src='/javascript/slam.{{.Minified}}js?v={{.Version}}')
     script
-      function loadScript(url, callback)
+      /*function loadScript(url, callback)
       {
         // Adding the script tag to the head as suggested before
         var head = document.head;
@@ -617,20 +617,20 @@ html(lang='en',manifest='/manifest.appcache')
         head.appendChild(script);
       }
       
-      loadScript("slam.js", function() {
-        module.exports({
+      loadScript("javascript/slam.js", function() {*/
+        window.slam({
           room: '{{.Room}}',
           acceptLanguage: '{{.AcceptLanguage}}',
           ext: '.{{.Minified}}js?v={{.Version}}',
           dev: {{.Dev}},
           v: '{{.Version}}'
         });
-      });
+      //});
       
-      require('slam.js')(ctx = {
+      /*require('slam.js')(ctx = {
         room: '{{.Room}}',
         acceptLanguage: '{{.AcceptLanguage}}',
         ext: '.{{.Minified}}js?v={{.Version}}',
         dev: {{.Dev}},
         v: '{{.Version}}'
-      })
+      })*/
