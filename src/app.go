@@ -1,7 +1,7 @@
 package main
 
 
-
+import l "log"
 import (
   "google.golang.org/appengine"
   "google.golang.org/appengine/channel"
@@ -382,16 +382,8 @@ func Cleanup(str string) string {
 func main() {
   now := time.Now()
   rand.Seed(now.Unix())
-  port := os.Getenv("PORT")
-  if port == "" {
-	  port = "8080"
-	  log.Printf("Defaulting to port %s", port)
-  }
+  l.Printf("Defaulting to port 8080")
 
-  log.Printf("Listening on port %s", port)
-  if err := http.ListenAndServe(":"+port, nil); err != nil {
-	  log.Fatal(err)
-  }
   http.HandleFunc("/", Main)
   http.HandleFunc("/manifest.appcache", AppCache)
   http.HandleFunc("/tech", Tech)
@@ -403,6 +395,7 @@ func main() {
   http.HandleFunc("/_occupants", Occupants)
   http.HandleFunc("/_ah/channel/connected/", OnConnect)
   http.HandleFunc("/_ah/channel/disconnected/", OnDisconnect)
+  appengine.Main()
 }
 
 func Auth(handler http.HandlerFunc) http.HandlerFunc {
