@@ -3,7 +3,7 @@ const webpack = require("webpack");
 
 module.exports = {
   mode: "development",
-  entry: "./index.js",
+  entry: "./entry.js",
   output: {
     filename: "build.js",
     path: path.resolve(__dirname, "build"),
